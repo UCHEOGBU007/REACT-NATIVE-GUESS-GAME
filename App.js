@@ -28,9 +28,16 @@ export default function App() {
       <Gamescreen numberValue={numbers} gameOverScreen={gameOverHandler} />
     );
   }
-  // condition for migrating to gameover screen
+
+  //Created a dedicated Reset Function
+  function startNewGameHandler() {
+    setNumbers(null);
+    setGameover(false);
+  }
+
+  // Pass that function to your GameOver component
   if (gameOver) {
-    display = <GameOver />;
+    display = <GameOver freshgame={startNewGameHandler} />;
   }
 
   //JSX APP CONTAINER

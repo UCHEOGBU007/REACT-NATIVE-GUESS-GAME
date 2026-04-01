@@ -1,5 +1,5 @@
-import { useEffect, useState, useRef } from "react"; // Added useRef
-import { View, Text, StyleSheet, Alert } from "react-native";
+import { useEffect, useState, useRef, use } from "react"; // Added useRef
+import { View, Text, StyleSheet, Alert, FlatList } from "react-native";
 import Card from "../Components/Card";
 import Title from "../Components/Title";
 import Buttons from "../Components/Buttons";
@@ -19,7 +19,7 @@ const GameScreen = ({ numberValue, gameOverScreen }) => {
   const [usenumber, setUseNumber] = useState(() =>
     generateNumber(1, 100, numberValue),
   );
-
+  const [GuessRounds, setGuessRounds] = useState([usenumber]);
   // 2. Use Refs for boundaries so they persist across re-renders
   const minBoundary = useRef(1);
   const maxBoundary = useRef(100);
@@ -37,9 +37,11 @@ const GameScreen = ({ numberValue, gameOverScreen }) => {
       (options === "lower" && usenumber < numberValue) ||
       (options === "higher" && usenumber > numberValue)
     ) {
-      Alert.alert("NOTICE!", "You should know that this is very wrong ...", [
-        { text: "Cancel", style: "cancel" },
-      ]);
+      Alert.alert(
+        "NOTICE!",
+        "You should know that this is wrong to choose the number that is not in the current range of your guess.",
+        [{ text: "Cancel", style: "cancel" }],
+      );
       return;
     }
 
@@ -57,13 +59,14 @@ const GameScreen = ({ numberValue, gameOverScreen }) => {
       usenumber,
     );
     setUseNumber(nextNumber);
+    setGuessRounds((prevRounds) => [nextNumber, ...prevRounds]);
   }
 
   return (
     <View style={styles.GameScreen}>
-      <Title>OPPONENT GUESSED</Title>
+      <Title>You guessed : {numberValue}</Title>
       <View style={styles.numberContainer}>
-        <Text style={styles.numberText}>{usenumber}</Text>
+        <Text style={styles.numberText}> Computer Guessed :{usenumber}</Text>
       </View>
       <Card>
         <Text style={{ color: "white", marginBottom: 10 }}>
@@ -74,6 +77,18 @@ const GameScreen = ({ numberValue, gameOverScreen }) => {
           <Buttons onPress={() => buttonsEffect("higher")}>Plus</Buttons>
         </View>
       </Card>
+      <View style={{ flex: 1 }}>
+        <FlatList
+          data={GuessRounds} // Example data, replace with actual guess history if needed
+          keyExtractor={(index) => index}
+          renderItem={(itemData) => (
+            <View style={styles.guessItem}>
+              <Text style={styles.guessText}>Number #{itemData.index + 1}</Text>
+              <Text style={styles.guessText}>{itemData.item}</Text>
+            </View>
+          )}
+        />
+      </View>
     </View>
   );
 };
@@ -82,7 +97,6 @@ export default GameScreen;
 
 const styles = StyleSheet.create({
   GameScreen: {
-    flex: 1,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -91,15 +105,37 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   numberContainer: {
-    borderWidth: 2,
-    borderColor: "white",
+    // borderWidth: 2,
+    // borderColor: "#ddb52f",
     padding: 20,
     margin: 20,
     borderRadius: 8,
   },
   numberText: {
-    fontSize: 36,
+    fontSize: 20,
     color: "white",
+    fontWeight: "bold",
+  },
+  guessItem: {
+    borderColor: "#ddb52f",
+    borderWidth: 1,
+    borderRadius: 40,
+    padding: 12,
+    marginVertical: 8,
+    backgroundColor: "#3b021f",
+    // THE KEY LOGIC:
+    flexDirection: "row", // Align children horizontally
+    justifyContent: "space-between", // Push children to the edges
+    width: "100%", // Ensure it takes the full width of the container
+    elevation: 4, // Shadow for Android (optional)
+    shadowColor: "black", // Shadow for iOS (optional)
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3,
+  },
+  guessText: {
+    color: "white",
+    fontSize: 16,
     fontWeight: "bold",
   },
 });
