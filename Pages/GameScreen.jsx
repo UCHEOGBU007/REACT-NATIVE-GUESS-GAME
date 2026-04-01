@@ -79,8 +79,8 @@ const GameScreen = ({ numberValue, gameOverScreen }) => {
       </Card>
       <View style={{ flex: 1 }}>
         <FlatList
-          data={GuessRounds} // Example data, replace with actual guess history if needed
-          keyExtractor={(index) => index}
+          data={GuessRounds}
+          keyExtractor={(index) => index.toString()}
           renderItem={(itemData) => (
             <View style={styles.guessItem}>
               <Text style={styles.guessText}>Number #{itemData.index + 1}</Text>
@@ -124,9 +124,9 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     backgroundColor: "#3b021f",
     // THE KEY LOGIC:
-    flexDirection: "row", // Align children horizontally
-    justifyContent: "space-between", // Push children to the edges
-    width: "100%", // Ensure it takes the full width of the container
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
     elevation: 4, // Shadow for Android (optional)
     shadowColor: "black", // Shadow for iOS (optional)
     shadowOffset: { width: 0, height: 0 },
